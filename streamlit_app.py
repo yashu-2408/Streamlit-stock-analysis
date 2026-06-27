@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import yfinance as yf
-from datetime import datetime
 from typing import Optional
 
 # Function calling local CSS sheet
@@ -12,28 +11,19 @@ def local_css(file_name):
 # Local CSS sheet
 local_css("style.css")
 
-# Ticker search feature in sidebar
-st.sidebar.subheader("""Stock Search Web App""")
-selected_stock = st.sidebar.text_input("Enter a valid stock ticker...", "GOOG")
-button_clicked = st.sidebar.button("GO")
-if button_clicked:
-    main()
-
 # Main function
 def main():
     st.subheader("""Daily **closing price** for """ + selected_stock)
     # Get data on searched ticker
     stock_data = yf.Ticker(selected_stock)
     # Get historical data for searched ticker
-    stock_df = stock_data.history(period='1d', start='2020-01-01', end=None)
+    stock_df = stock_data.history(start='2020-01-01')
     # Print line chart with daily closing prices for searched ticker
     st.line_chart(stock_df.Close)
 
     st.subheader("""Last **closing price** for """ + selected_stock)
-    # Define variable today
-    today = datetime.today().strftime('%Y-%m-%d')
     # Get current date data for searched ticker
-    stock_lastprice = stock_data.history(period='1d', start=today, end=today)
+    stock_lastprice = stock_data.history(period='1d')
     # Get current date closing price for searched ticker
     last_price = stock_lastprice.Close
     # If market is closed on current date, print that there is no data available
@@ -103,6 +93,11 @@ def display_data(data: Optional[pd.DataFrame]):
         st.write("No data available at the moment")
     else:
         st.write(data)
+
+# Ticker search feature in sidebar
+st.sidebar.subheader("""Stock Search Web App""")
+selected_stock = st.sidebar.text_input("Enter a valid stock ticker...", "GOOG")
+button_clicked = st.sidebar.button("GO")
 
 if __name__ == "__main__":
     main()
